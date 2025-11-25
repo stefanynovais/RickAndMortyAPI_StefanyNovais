@@ -61,7 +61,7 @@ export default function CharactersListScreen({ navigation }) {
 
             //navegando para a tela de detalhes
             //enviando o personagem como parâmetro
-            onPress={() => navigation.navigate("CharacterDetails", { character: item })}
+            onPress={() => navigation.navigate("CharacterDetailsScreen", { character: item })}
           >
 
             {/* Imagem do personagem */}
@@ -85,7 +85,7 @@ export default function CharactersListScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#dbd8d857',
   },
   loadingContainer: {
     flex: 1,
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row', 
     padding: 10,
-    backgroundColor: '#eee',
+    backgroundColor: '#d4e9d9ff',
     marginBottom: 10,
     borderRadius: 8,
     marginHorizontal: 10,
