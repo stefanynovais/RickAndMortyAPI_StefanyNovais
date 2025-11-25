@@ -2,7 +2,7 @@
 
 Bem-vindo(a) ao Rick and Morty Explorer, um mini-app feito em React Native para explorar personagens do universo insano criado por Justin Roiland e Dan Harmon.
 
-#🌌 Parte 1 — Estrutura do Projeto#
+# 🌌 Parte 1 — Estrutura do Projeto
 
 Este app é organizado em algumas seções principais:
 
