@@ -27,7 +27,7 @@ AppNavigator.js
 Controla a ordem das telas. A primeira tela mostrada é a Splash Screen.
 
 
-# 🪐 Parte 2 — Funcionalidades
+# 🪐 Parte 2 — Tela de Listagem
 ## ⭐ Splash Screen Animada
 
 Fundo com gradiente escuro espacial
@@ -44,13 +44,18 @@ Consome a API oficial: https://rickandmortyapi.com/
 
 Exibe cards com nome, espécie, imagem e status.
 
+# 🪐 Parte 3 — Tela de Listagem
 ## ⭐ Tela de Detalhes
 
-Mostra imagem grande
+Exibe: 
 
-Lista atributos principais
+Nome completo;
 
-Layout limpo e organizado
+Status, Espécie, Gênero;
+
+Localização de Origem (origin.name);
+
+Localização Atual (location.name).
 
 
 # 🔧 Tecnologias Utilizadas
