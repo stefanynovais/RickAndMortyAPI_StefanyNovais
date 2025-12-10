@@ -57,6 +57,12 @@ Localização de Origem (origin.name);
 
 Localização Atual (location.name).
 
+# 🪐 Desafios
+1. Paginação Infinita: Implemente o recurso onEndReached do FlatList para carregar automaticamente a próxima página da API quando o usuário rolar até o final da lista (Dica: A API informa a URL da próxima página no objeto info.next).
+
+2. Busca/Filtro: Adicione uma barra de pesquisa (TextInput) que filtre a lista de personagens em tempo real, usando o parâmetro name na requisição da API (ex: .../character/?name=rick).
+
+3. Estilização Temática: Utilize as cores e o estilo visual da série "Rick and Morty" para deixar o app mais atraente
 
 # 🔧 Tecnologias Utilizadas
 
