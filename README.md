@@ -64,6 +64,10 @@ Localização Atual (location.name).
 
 3. Estilização Temática: Utilize as cores e o estilo visual da série "Rick and Morty" para deixar o app mais atraente
 
+   ## 📹 Demonstração da API (Vídeo)
+
+**Link:** https://youtu.be/sIxMNp4ulzY?si=wgrkur5CACQLKD_m
+
 # 🔧 Tecnologias Utilizadas
 
 React Native (Expo)
