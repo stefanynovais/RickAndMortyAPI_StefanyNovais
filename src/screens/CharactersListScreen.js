@@ -1,104 +1,194 @@
-//Esse arquivo é a tela que mostra a lista dos personagens 
+//esse arquivo vai msotrar a lista dos personagens 
 
 import React, { useEffect, useState } from 'react';
 import { 
   View, Text, FlatList, Image, 
-  ActivityIndicator, TouchableOpacity, StyleSheet 
+  ActivityIndicator, TouchableOpacity, StyleSheet, TextInput
 } from 'react-native';
 
 export default function CharactersListScreen({ navigation }) {
 
-  // Estado que guarda os personagens da API
+  //guarda todos os personagens carregados até o momento
   const [characters, setCharacters] = useState([]);
 
-  // Estado para controlar o carregamento
+  //controla quando está carregando dados da API
   const [loading, setLoading] = useState(true);
 
-  //useEffect faz rodar apenas 1 vez (ao abrir a tela)
-  useEffect(() => {
+  //guarda a URL da próxima página enviada pela API (para paginação)
+  const [nextPageUrl, setNextPageUrl] = useState("https://rickandmortyapi.com/api/character");
 
-    //Buscando os personagens da API Rick and Morty
-    fetch("https://rickandmortyapi.com/api/character")
-      .then(response => response.json()) //transforma resposta em JSON
+  //guarda o texto digitado no campo de busca
+  const [searchText, setSearchText] = useState("");
+
+  //impede várias chamadas simultâneas enquanto carrega nova página
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+
+
+  
+   //função para buscar dados da API
+  
+  const fetchCharacters = (url, resetList = false) => {
+    //se for busca, apaga os dados passados
+    if (resetList) {
+      setCharacters([]);
+      setLoading(true);
+    }
+
+    fetch(url)
+      .then(response => response.json())
       .then(data => {
 
-        // 'results' é o array com os personagens
-        setCharacters(data.results);
+        //caso a API retorne erro ao buscar nome que não existe
+        if (data.error) {
+          setCharacters([]);
+          setNextPageUrl(null);
+          setLoading(false);
+          return;
+        }
 
-        // Desativa o loading
+        //adiciona os novos personagens à lista (concatenação)
+        setCharacters(prev => resetList ? data.results : [...prev, ...data.results]);
+
+        //atualiza a URL da próxima página
+        setNextPageUrl(data.info.next);
+
         setLoading(false);
+        setIsFetchingMore(false);
       })
-      .catch(error => {
-        console.log("Erro ao buscar API:", error);
-
-        // Mesmo com erro, tira-se o loading
+      .catch(err => {
+        console.log("Erro na API:", err);
         setLoading(false);
+        setIsFetchingMore(false);
       });
+  };
 
-  }, []); //array vazio = roda apenas uma vez
 
-  //enquanto estiver carregando, mostra indicador
-  if (loading) {
+ 
+   //busca a primeira página de personagens
+   
+  useEffect(() => {
+    fetchCharacters(nextPageUrl);
+  }, []);
+
+
+  //quando o usuário chegar ao fim da lista, já roda para a próxima página automaticamente
+  const loadMore = () => {
+    //se já estiver carregando ou não existir próxima página: não faz nada
+    if (isFetchingMore || !nextPageUrl) return;
+
+    setIsFetchingMore(true);
+    fetchCharacters(nextPageUrl);
+  };
+
+
+  
+    //lógica da busca: sempre que o texto mudar, chamamos a API com ?name=...; e também reinicia-se a lista (resetList=true)
+   
+  const handleSearch = (text) => {
+    setSearchText(text);
+
+    //se for campo vazio, volta à página 1 da API
+    if (text.trim() === "") {
+      fetchCharacters("https://rickandmortyapi.com/api/character", true);
+      setNextPageUrl("https://rickandmortyapi.com/api/character");
+      return;
+    }
+
+    //busca filtrada
+    const url = `https://rickandmortyapi.com/api/character/?name=${text}`;
+    fetchCharacters(url, true);
+  };
+
+
+  //tela de carregamento inicial
+  if (loading && characters.length === 0) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="green" />
-        <Text>Carregando personagens...</Text>
+        <ActivityIndicator size="large" color="#00ff66" />
+        <Text style={{ color: "#00ff66" }}>Carregando personagens...</Text>
       </View>
     );
   }
 
+
   return (
     <View style={styles.container}>
-      
-      <FlatList 
-        data={characters} //lista de dados
-        keyExtractor={(item) => item.id.toString()} //chave única de cada item
 
-        //card clicável
+      {/*campo de busca que chama a API em tempo real*/}
+      <TextInput
+        style={styles.searchBar}
+        placeholder="Buscar personagem..."
+        placeholderTextColor="#9ae7c1"
+        value={searchText}
+        onChangeText={handleSearch}
+      />
+
+      {/*lista principal com paginação infinita*/}
+      <FlatList 
+        data={characters}
+        keyExtractor={item => item.id.toString()}
+
         renderItem={({ item }) => (
           <TouchableOpacity 
             style={styles.card}
-
-            //navegando para a tela de detalhes
-            //enviando o personagem como parâmetro
             onPress={() => navigation.navigate("CharacterDetailsScreen", { character: item })}
           >
-
-            {/* Imagem do personagem */}
             <Image source={{ uri: item.image }} style={styles.image} />
 
-            {/* Informações básicas */}
             <View style={styles.info}>
               <Text style={styles.name}>{item.name}</Text>
-              <Text>Status: {item.status}</Text>
-              <Text>Espécie: {item.species}</Text>
+              <Text style={styles.text}>Status: {item.status}</Text>
+              <Text style={styles.text}>Espécie: {item.species}</Text>
             </View>
-
           </TouchableOpacity>
         )}
+
+        //chama paginação ao chegar no fim
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.5}
+
+        //loading da paginação
+        ListFooterComponent={
+          isFetchingMore && (
+            <ActivityIndicator size="small" color="#00ff66" />
+          )
+        }
       />
     </View>
   );
 }
 
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#dbd8d857',
+    backgroundColor: '#0c0f14',
+    paddingTop: 10,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  card: {
-    flexDirection: 'row', 
+  searchBar: {
+    backgroundColor: '#1b1f25',
+    margin: 10,
     padding: 10,
-    backgroundColor: '#d4e9d9ff',
-    marginBottom: 10,
     borderRadius: 8,
+    color: '#00ff66',
+    borderWidth: 1,
+    borderColor: '#00ff66',
+  },
+  card: {
+    flexDirection: 'row',
+    backgroundColor: '#16241d',
+    borderRadius: 10,
     marginHorizontal: 10,
+    marginVertical: 6,
+    padding: 10,
+    borderLeftWidth: 4,
+    borderLeftColor: "#00ff66",
   },
   image: {
     width: 90,
@@ -112,5 +202,9 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: "#00ff66",
+  },
+  text: {
+    color: "#d7ffe9"
   }
 });
